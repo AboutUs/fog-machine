@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require "#{File.dirname __FILE__}/../config/environment"
+require 'yaml'
+
+def ask(prompt)
+  print "#{prompt}: "
+  gets.strip
+end
+
+file = File.open(CONFIG_FILE, "w")
+
+conf = {}
+
+conf["access_key_id"] = ask "aws access key"
+conf["secret_access_key"] = ask "aws secret key"
+conf["worker_domain"] = ask "sdb worker domain"
+conf["profile_domain"] = ask "sdb profile domain"
+
+print "Writing config file (.fmrc)... "
+YAML.dump(conf, file)
+puts "Done"
