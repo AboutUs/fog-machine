@@ -1,17 +1,14 @@
 #!/usr/bin/env ruby
-
-begin
-  require 'rubygems'
-rescue; end
+require 'rubygems'
 require 'yaml'
 
 def ask(prompt)
   print "#{prompt}: "
-  gets.strip
+  $stdin.gets.strip
 end
 
-CONFIG_FILE = File.join(ENV['HOME'], ".fmrc")
-file = File.open(CONFIG_FILE, "w")
+config_file = File.join(ENV['HOME'], ".fmrc")
+file = File.open(config_file, "w")
 
 conf = {}
 
@@ -20,6 +17,6 @@ conf["secret_access_key"] = ask "aws secret key"
 conf["worker_domain"] = ask "sdb worker domain"
 conf["profile_domain"] = ask "sdb profile domain"
 
-print "Writing config file (#{CONFIG_FILE})... "
+print "Writing config file (#{config_file})... "
 YAML.dump(conf, file)
 puts "Done"
