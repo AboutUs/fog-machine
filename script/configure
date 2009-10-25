@@ -7,7 +7,7 @@ def ask(prompt)
   $stdin.gets.strip
 end
 
-config_file = File.join(ENV['HOME'], ".fmrc")
+config_file = ENV['FOG_MACHINE_CONFIG_FILE'] || File.join(ENV['HOME'], ".fmrc")
 file = File.open(config_file, "w")
 
 conf = {}

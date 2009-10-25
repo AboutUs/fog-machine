@@ -2,6 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'fog_machine'
 
 describe FogMachine do
+
   describe FogMachine::InstanceArray do
     def mock_instance mocks = {}
       mock("Instance", :run_command => "running ssh command")
