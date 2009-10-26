@@ -78,4 +78,20 @@ describe Recipe do
       end.should raise_error(ArgumentError)
     end
   end
+
+  describe "loading recipes" do
+    # Unfortunately this loading can't be tested with FakeFS due to a bug in
+    # its handling of recursive globs.  Falling back to simple mocking :-(
+    # http://github.com/defunkt/fakefs/issues#issue/16
+    it "should reload recipes (recursively) in the recipes directory" do
+      Dir.should_receive(:[]).with(Recipe::RECIPE_DIR + '/**/*.rb').and_return([])
+      Recipe.reload!
+    end
+
+    it "should load recipes (recursively) in the recipes directory" do
+      Dir.should_receive(:[]).with(Recipe::RECIPE_DIR + '/**/*.rb').and_return([])
+      Recipe.load!
+    end
+  end
+
 end

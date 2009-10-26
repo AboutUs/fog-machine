@@ -1,4 +1,5 @@
 class Recipe
+  RECIPE_DIR = File.dirname(__FILE__) + "/../recipes"
   class << self
     def define_command(cmd_str = nil, &cmd_block)
       if cmd_str and block_given?
@@ -30,15 +31,15 @@ class Recipe
     end
 
     def load!
-      Dir[File.join(RECIPE_DIR, "*.rb")].each do |file|
-        require file[0..file.length-4]
-      end
+      with_recipe_files{|file| require file[0..file.length-4]}
     end
 
     def reload!
-      Dir[File.join(RECIPE_DIR, "*.rb")].each do |file|
-        load file
-      end
+      with_recipe_files{|file| load file}
+    end
+
+    def with_recipe_files
+      Dir[File.join(RECIPE_DIR, "**", "*.rb")].each{|file| yield file }
     end
   end
 end

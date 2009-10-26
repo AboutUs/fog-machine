@@ -17,6 +17,5 @@ AWS::S3::Base.establish_connection!(
 $: << File.dirname(__FILE__) + "/../lib"
 require "recipe"
 require "util"
-RECIPE_DIR = File.dirname(__FILE__) + "/../recipes"
 
 Recipe.load!
