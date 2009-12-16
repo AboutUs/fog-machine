@@ -4,7 +4,7 @@ require 'environment'
 class FogMachine
   class << self
     def sdb_servers
-      sdb_items.inject({}) do |_, item|
+      Util.sdb_items(CONFIG["worker_domain"]).inject({}) do |_, item|
         _[item.keys.first] = item.values.first
 
         _
@@ -18,14 +18,6 @@ class FogMachine
       end.each do |inactive_id|
         sdb.delete_attributes CONFIG["worker_domain"], inactive_id
       end
-    end
-
-    def sdb_items(token = nil)
-      query =  sdb.select("SELECT * from #{CONFIG["worker_domain"]}", token)
-      token = query[:next_token]
-      items = query[:items]
-      return items unless token
-      items + sdb_items(token)
     end
 
     def servers
@@ -241,6 +233,12 @@ class FogMachine
       def get(name)
         attrs = sdb.get_attributes(CONFIG["profile_domain"], name)[:attributes]
         new name, attrs
+      end
+
+      def all
+        Util.sdb_items(CONFIG["profile_domain"]).map do |data|
+          new data.keys.first, data.values.first
+        end
       end
 
       def save(name, attrs)
