@@ -189,8 +189,9 @@ class FogMachine
       result = result.strip if result.respond_to?(:strip)
     end
 
+    # TODO: Make this configurable
     def keyfile
-      file = "/www/aboutus/secrets/aws/#{ssh_key_name}-key"
+      file = "/www/aboutus/secrets/ssl/#{ssh_key_name}.pem"
       raise "no keyfile exists" unless File.exists? file
 
       file
@@ -214,6 +215,10 @@ class FogMachine
 
     def ssh!
       %x{osascript -e 'tell app "System Events" to set termOn to (exists process "Terminal")' -e 'set cmd to "#{ssh_command}"' -e 'if (termOn) then' -e 'tell app "Terminal" to do script cmd' -e 'else' -e 'tell app "Terminal" to do script cmd in front window' -e 'end if' -e 'tell app "Terminal" to activate'}
+    end
+
+    def shutdown
+      FM::ec2.terminate_instances [id]
     end
   end
 
