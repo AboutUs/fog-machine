@@ -27,7 +27,7 @@ class Recipe
     end
 
     def get(name)
-      name.camelize.constantize
+      name.to_s.constantize
     end
 
     def load!
