@@ -2,4 +2,4 @@
 
 irb = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'
 
-exec "#{irb} -I \"#{File.dirname(__FILE__)}/../lib\" -r \"fog_machine\" -r \"console\" --simple-prompt"
+exec "#{irb} -I \"#{File.dirname(__FILE__)}/../lib\" -r \"fog_machine\"  --simple-prompt"

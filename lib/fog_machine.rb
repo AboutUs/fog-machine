@@ -4,7 +4,7 @@ require 'environment'
 class FogMachine
   class << self
     def sdb_servers
-      Util.sdb_items(CONFIG["worker_domain"]).inject({}) do |_, item|
+      Util.sdb_items(Config["worker_domain"]).inject({}) do |_, item|
         _[item.keys.first] = item.values.first
 
         _
@@ -16,7 +16,7 @@ class FogMachine
       sdb_servers.keys.reject do |id|
         usable_instance_ids.include? id
       end.each do |inactive_id|
-        sdb.delete_attributes CONFIG["worker_domain"], inactive_id
+        sdb.delete_attributes Config["worker_domain"], inactive_id
       end
     end
 
@@ -52,14 +52,14 @@ class FogMachine
     end
 
     def ec2
-      RightAws::Ec2.new CONFIG["access_key_id"],
-        CONFIG["secret_access_key"],
+      RightAws::Ec2.new Config["access_key_id"],
+        Config["secret_access_key"],
         :logger => logger
     end
 
     def sdb
-      RightAws::SdbInterface.new CONFIG["access_key_id"],
-        CONFIG["secret_access_key"],
+      RightAws::SdbInterface.new Config["access_key_id"],
+        Config["secret_access_key"],
         :multi_thread => true,
         :logger => logger
     end
@@ -97,7 +97,7 @@ class FogMachine
       response = ec2.launch_instances ami, launch_options
 
       response.each do |server|
-        sdb.put_attributes CONFIG["worker_domain"], server[:aws_instance_id], {'profile' => tag, 'started_at' => Time.now.to_i}
+        sdb.put_attributes Config["worker_domain"], server[:aws_instance_id], {'profile' => tag, 'started_at' => Time.now.to_i}
       end
     end
   end
@@ -189,11 +189,9 @@ class FogMachine
       result = result.strip if result.respond_to?(:strip)
     end
 
-    # TODO: Make this configurable
     def keyfile
-      file = "/www/aboutus/secrets/ssl/#{ssh_key_name}.pem"
-      raise "no keyfile exists" unless File.exists? file
-
+      file = File.join(Config['ssh_key_directory'], ssh_key_name + '.pem')
+      raise "No keyfile exists at #{file.inspect}" unless File.exists? file
       file
     end
 
@@ -202,7 +200,7 @@ class FogMachine
     end
 
     def []=(key, val)
-      FogMachine.sdb.put_attributes CONFIG["worker_domain"], id, {key => val}
+      FogMachine.sdb.put_attributes Config["worker_domain"], id, {key => val}
     end
 
     def [](key)
@@ -236,18 +234,18 @@ class FogMachine
 
     class << self
       def get(name)
-        attrs = sdb.get_attributes(CONFIG["profile_domain"], name)[:attributes]
+        attrs = sdb.get_attributes(Config["profile_domain"], name)[:attributes]
         new name, attrs
       end
 
       def all
-        Util.sdb_items(CONFIG["profile_domain"]).map do |data|
+        Util.sdb_items(Config["profile_domain"]).map do |data|
           new data.keys.first, data.values.first
         end
       end
 
       def save(name, attrs)
-        sdb.put_attributes CONFIG["profile_domain"], name, attrs, true
+        sdb.put_attributes Config["profile_domain"], name, attrs, true
       end
 
       def sdb

@@ -16,6 +16,7 @@ conf["access_key_id"] = ask "aws access key"
 conf["secret_access_key"] = ask "aws secret key"
 conf["worker_domain"] = ask "sdb worker domain"
 conf["profile_domain"] = ask "sdb profile domain"
+conf["ssh_key_directory"] = ask "path to directory containing your aws ssh keys"
 
 print "Writing config file (#{config_file})... "
 YAML.dump(conf, file)

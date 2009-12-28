@@ -1,5 +1,4 @@
 class Recipe
-  RECIPE_DIR = File.dirname(__FILE__) + "/../recipes"
   class << self
     def define_command(cmd_str = nil, &cmd_block)
       if cmd_str and block_given?
@@ -39,7 +38,7 @@ class Recipe
     end
 
     def with_recipe_files
-      Dir[File.join(RECIPE_DIR, "**", "*.rb")].each{|file| yield file }
+      Dir[File.join(FogMachine::Config['recipe_directory'], "**", "*.rb")].each{|file| yield file }
     end
   end
 end

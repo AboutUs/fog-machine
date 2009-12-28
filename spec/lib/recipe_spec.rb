@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'fog_machine'
 require 'recipe'
 
 describe Recipe do
@@ -80,17 +81,19 @@ describe Recipe do
   end
 
   describe "loading recipes" do
-    # Unfortunately this loading can't be tested with FakeFS due to a bug in
-    # its handling of recursive globs.  Falling back to simple mocking :-(
-    # http://github.com/defunkt/fakefs/issues#issue/16
     it "should reload recipes (recursively) in the recipes directory" do
-      Dir.should_receive(:[]).with(Recipe::RECIPE_DIR + '/**/*.rb').and_return([])
-      Recipe.reload!
-    end
+      FakeFS do
+        File.open(FogMachine::Config.config_file_path, 'w') do |f|
+          f.puts YAML.dump('recipe_directory' => '/recipes')
+        end
+        FileUtils.mkdir_p ('/recipes/nested')
+        File.open('/recipes/nested/my_rec.rb', 'w') do |f|
+          f.puts "class MyRec < Recipe; end"
+        end
 
-    it "should load recipes (recursively) in the recipes directory" do
-      Dir.should_receive(:[]).with(Recipe::RECIPE_DIR + '/**/*.rb').and_return([])
-      Recipe.load!
+        Recipe.should_receive(:load).with '/recipes/nested/my_rec.rb'
+        Recipe.reload!
+      end
     end
   end
 

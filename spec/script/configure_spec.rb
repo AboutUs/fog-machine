@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe 'script/configure' do
+  include SpecHelpers
   before { FakeFS.activate! }
   after { FakeFS.deactivate! }
 
@@ -16,7 +17,8 @@ describe 'script/configure' do
         "access_key_id"=>"key",
         "secret_access_key"=>"secret",
         "worker_domain"=>"foo",
-        "profile_domain"=>"bar"
+        "profile_domain"=>"bar",
+        "ssh_key_directory" => "/foo/bar"
       }
   end
 
@@ -31,15 +33,9 @@ describe 'script/configure' do
   end
 
   def run_config_script
-    $stdin, $stdout = StringIO.new("key\nsecret\nfoo\nbar\n"), StringIO.new("")
+    $stdin, $stdout = StringIO.new("key\nsecret\nfoo\nbar\n/foo/bar"), StringIO.new("")
     load File.expand_path(File.dirname(__FILE__) + '/../../script/configure')
     $stdin, $stdout = STDIN, STDOUT
   end
 
-  def stub_environment_variables!(vars = {})
-    vars.each do |name, value|
-      ENV.should_receive(:[]).any_number_of_times.
-        with(name.to_s).and_return value
-    end
-  end
 end
